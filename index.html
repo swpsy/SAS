@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>焦虑自测量表 — 识我心理 SoulWeave</title>
+<style>
+:root{
+  --bg:#f7fafc;
+  --card:#fff;
+  --green:#16a34a;
+  --muted:#666;
+}
+
+*{box-sizing:border-box;font-family:"Noto Sans SC","Microsoft Yahei",Arial,sans-serif}
+body{margin:0;background:var(--bg);color:#111}
+.container{max-width:760px;margin:36px auto;padding:20px}
+.card{background:var(--card);border-radius:12px;padding:28px;box-shadow:0 6px 18px rgba(20,20,30,0.06)}
+
+/* Start page */
+.notice{font-size:16px;line-height:1.8}
+.notice b{font-weight:800}
+.darkred{color:#8b0000}
+.start-btn{display:block;margin:28px auto 0;padding:12px 22px;background:var(--green);color:#fff;border-radius:8px;border:none;font-size:18px;cursor:pointer}
+
+/* Question layout */
+.q-title{font-size:20px;margin-bottom:16px}
+.choices{display:flex;flex-direction:column;gap:12px}
+.choice{padding:14px;border-radius:10px;border:1px solid #e6e6e6;cursor:pointer}
+.choice:hover{background:#f1f6ff}
+.nav-buttons{margin-top:18px;display:flex;justify-content:space-between}
+.nav-btn{padding:8px 16px;background:#eee;border-radius:6px;border:none;cursor:pointer}
+.nav-btn:hover{background:#ddd}
+.logo-small{font-size:12px;color:var(--muted);text-align:center;margin-top:18px}
+
+/* Progress */
+.prog{height:8px;background:#eee;border-radius:8px;overflow:hidden;margin:16px 0}
+.prog > i{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#7c3aed);width:0%}
+
+/* Report */
+.report-score{font-size:28px;font-weight:700;margin-bottom:8px}
+.score-sub{color:var(--muted);margin-bottom:12px}
+.bar-container{position:relative;margin-top:20px;margin-bottom:40px;}
+.bar-wrap{position:relative;height:16px;background:linear-gradient(90deg,#60a5fa,#7c3aed);border-radius:8px}
+.marker{position:absolute;top:-12px;width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid #111;transform:translateX(-50%)}
+
+/* 标签放在条下方 */
+.threshold-labels{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  margin-top:8px;
+  font-size:12px;
+  color:#000;
+}
+
+.legend{margin-top:12px;font-size:16px;line-height:1.5em;min-height:3em}
+.desc{margin-top:12px;background:#fbfbfe;padding:14px;border-radius:8px;border:1px solid #eee;min-height:6em}
+
+.download-btn{display:inline-block;margin-top:18px;padding:10px 16px;background:#111;color:#fff;border-radius:8px;text-decoration:none}
+.notes{font-size:12px;color:#555;margin-top:18px}
+
+.screen{display:none}
+.screen.active{display:block}
+footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}
+
+@media (max-width:520px){.container{padding:14px}.card{padding:18px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <!-- Start Screen -->
+    <section id="start" class="screen active">
+      <h2>焦虑自测量表</h2>
+      <p class="notice"><b>注意事项：</b><br>
+        本测试仅供参考，不作指导意见。本测试主要用于疗效评估，不能用于诊断<br>
+        请根据 <span class="darkred"><b>过去一周</b></span> 的情况填写题目。
+      </p>
+      <input type="password" id="testPassword" placeholder="请输入测评密码" style="width:100%;padding:8px;margin-top:10px;border-radius:6px;border:1px solid #ccc;">
+      <div id="errorMsg" style="color:red;margin-top:6px;font-size:14px"></div>
+      <button id="btnStart" class="start-btn">开始测评</button>
+    </section>
+
+    <!-- Question Screen -->
+    <section id="question-area" class="screen">
+      <div class="prog"><i id="progbar"></i></div>
+      <div class="q-title" id="qtext">题目文本</div>
+      <div class="choices" id="choices"></div>
+      <div class="nav-buttons">
+        <button id="prevBtn" class="nav-btn">上一题</button>
+        <span id="qNumDisplay"></span>
+      </div>
+      <div class="logo-small">识我心理 SoulWeave</div>
+    </section>
+
+    <!-- Report Screen -->
+    <section id="report" class="screen">
+      <h2>测评报告</h2>
+      <div id="report-content">
+        <div class="report-score" id="stdscore">标准分：--</div>
+        <div class="score-sub" id="rawscore">原始分：-- &nbsp;（标准分 = 原始分 × 1.25）</div>
+
+        <div class="bar-container">
+          <div class="bar-wrap" id="gradbar">
+            <div id="marker" class="marker"></div>
+          </div>
+          <div class="threshold-labels">
+            <span>正常</span>
+            <span>轻度焦虑</span>
+            <span>中度焦虑</span>
+            <span>重度焦虑</span>
+          </div>
+        </div>
+
+        <div class="legend" id="categoryLabel">-</div>
+        <div class="desc" id="categoryDesc">-</div>
+        <a id="downloadPdf" class="download-btn" href="#">下载 PDF 报告</a>
+        <div class="notes">
+          注：量表得分超过60分，建议立即前往医院获取专业评估<br>
+          注：量表结果仅供测试者参考，具体请以医院专业心理/精神科的评定
+        </div>
+      </section>
+  </div>
+  <footer>版本：识我心理 SoulWeave — 焦虑自测</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const questions=[{q:'1．我觉得比平时容易紧张和着急'},{q:'2．我无缘无故地感到害怕'},{q:'3．我容易心里烦乱或觉得惊恐'},{q:'4．我觉得我可能将要发疯'},{q:'5．我觉得一切都很好，也不会发生什么不幸'},{q:'6．我手脚发抖打颤'},{q:'7．我因为头痛、颈痛和背痛而苦恼'},{q:'8．我感觉容易衰弱和疲乏 '},{q:'9．我觉得心平气和，并且容易安静坐着'},{q:'10．我觉得心跳得快'},{q:'11．我因为一阵阵头晕而苦恼'},{q:'12．我有过晕倒发作，或觉得要晕倒似的'},{q:'13．我呼气吸气都感到很容易'},{q:'14．我手脚麻木和刺痛'},{q:'15．我因胃痛和消化不良而苦恼'},{q:'16．我常常要小便'},{q:'17．我的手常常是干燥温暖的'},{q:'18．我脸红发热'},{q:'19．我容易入睡并且一夜睡得很好'},{q:'20．我做恶梦'}];
+const reverseItems=new Set([5,9,13,17,19]);
+const options=['没有或很少时间','小部分时间','相当多时间','绝大部分或全部时间'];
+
+let idx=0;
+let rawScores=Array(questions.length).fill(0);
+
+const startBtn=document.getElementById('btnStart');
+const startScreen=document.getElementById('start');
+const qArea=document.getElementById('question-area');
+const report=document.getElementById('report');
+const qtext=document.getElementById('qtext');
+const choices=document.getElementById('choices');
+const progbar=document.getElementById('progbar');
+const marker=document.getElementById('marker');
+const errorMsg=document.getElementById('errorMsg');
+const prevBtn=document.getElementById('prevBtn');
+const qNumDisplay=document.getElementById('qNumDisplay');
+
+startBtn.addEventListener('click',()=>{
+  const pwd=document.getElementById('testPassword').value.trim();
+  if(pwd==='9910'){errorMsg.textContent='';startScreen.classList.remove('active');qArea.classList.add('active');idx=0;renderQuestion();}
+  else{errorMsg.textContent='密码失效，请联系客服';}
+});
+
+function renderQuestion(){
+  const qobj=questions[idx];
+  qtext.textContent=qobj.q;
+  choices.innerHTML='';
+  options.forEach((opt,i)=>{
+    const div=document.createElement('div');
+    div.className='choice';
+    div.tabIndex=0;
+    div.textContent=opt;
+    div.onclick=()=>selectOption(i+1);
+    div.onkeydown=(e)=>{if(e.key==='Enter') selectOption(i+1);}
+    // 高亮用户实际选择的选项
+if(rawScores[idx] > 0){
+    let displayVal = rawScores[idx]; // 实际存储值
+    // 如果是反向题，显示选项索引 = 5 - rawScores
+    let highlightIndex = reverseItems.has(idx+1) ? 5 - displayVal : displayVal;
+    if(i+1 === highlightIndex){
+        div.style.background="#d0ebff";
+    }
+}
+
+    choices.appendChild(div);
+  });
+  progbar.style.width=Math.round((idx)/questions.length*100)+'%';
+  qNumDisplay.textContent=`第 ${idx+1}/${questions.length} 题`;
+  prevBtn.style.display=idx>0?'inline-block':'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectOption(choiceValue){
+  let val=choiceValue;
+  if(reverseItems.has(idx+1)) val=5-choiceValue;
+  rawScores[idx]=val;
+  if(idx<questions.length-1){idx++;renderQuestion();}else{showReport();}
+}
+
+prevBtn.addEventListener('click',()=>{if(idx>0){idx--;renderQuestion();}});
+
+async function showReport(){
+  qArea.classList.remove('active'); report.classList.add('active');
+  const rawTotal=rawScores.reduce((a,b)=>a+b,0);
+  const stdScore=+(rawTotal*1.25).toFixed(1);
+  document.getElementById('rawscore').textContent=`原始分：${rawTotal} （标准分 = 原始分 × 1.25）`;
+  document.getElementById('stdscore').textContent=`标准分：${stdScore}`;
+
+  const min=25,max=100;
+  let pct=((stdScore-min)/(max-min))*100;
+  pct=Math.max(0,Math.min(100,pct));
+  marker.style.left=pct+'%';
+
+  let cat='',desc='';
+  if(stdScore<50){cat='正常';desc='得分处于正常范围。若无明显困扰，无需特别干预。保持良好作息与社交。';}
+  else if(stdScore>=50&&stdScore<=59){cat='轻度焦虑';desc='可能出现易紧张、睡眠轻度受影响、偶有心慌。建议关注情绪，适度放松练习与规律作息。';}
+  else if(stdScore>=60&&stdScore<=69){cat='中度焦虑';desc='情绪与日常功能可能受影响，常感紧张或躯体不适。建议咨询心理专业人士，考虑心理干预或行为疗法。';}
+  else{cat='重度焦虑';desc='焦虑明显干扰日常，可能伴有明显躯体症状。建议尽快寻求精神科/心理科专业评估。';}
+
+  document.getElementById('categoryLabel').textContent=`评估结果：${cat}`;
+  document.getElementById('categoryDesc').textContent=desc;
+
+  document.getElementById('downloadPdf').onclick=function(e){e.preventDefault();downloadPDF();}
+}
+
+async function downloadPDF(){
+  const el=document.getElementById('report-content');
+  const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+  const imgData=canvas.toDataURL('image/png');
+  const { jsPDF }=window.jspdf;
+  const pdf=new jsPDF({orientation:'portrait',unit:'px',format:[canvas.width,canvas.height]});
+  pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);
+  pdf.save('SAS_report.pdf');
+}
+
+document.addEventListener('keydown',(e)=>{
+  if(qArea.classList.contains('active')){
+    if(e.key>='1'&&e.key<='4') selectOption(parseInt(e.key));
+  }
+});
+</script>
+</body>
+</html>
