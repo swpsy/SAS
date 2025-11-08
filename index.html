@@ -203,11 +203,65 @@ async function showReport(){
   pct=Math.max(0,Math.min(100,pct));
   marker.style.left=pct+'%';
 
-  let cat='',desc='';
-  if(stdScore<50){cat='正常';desc='得分处于正常范围。若无明显困扰，无需特别干预。保持良好作息与社交。';}
-  else if(stdScore>=50&&stdScore<=59){cat='轻度焦虑';desc='可能出现易紧张、睡眠轻度受影响、偶有心慌。建议关注情绪，适度放松练习与规律作息。';}
-  else if(stdScore>=60&&stdScore<=69){cat='中度焦虑';desc='情绪与日常功能可能受影响，常感紧张或躯体不适。建议咨询心理专业人士，考虑心理干预或行为疗法。';}
-  else{cat='重度焦虑';desc='焦虑明显干扰日常，可能伴有明显躯体症状。建议尽快寻求精神科/心理科专业评估。';}
+let cat = '', content = '';
+
+if (stdScore < 50) {
+  cat = '正常';
+  content = `
+    <p><strong style="color:#007BFF;">解释：</strong><br>
+    您的分数在大多数人的常规波动范围内。这表明在过去的一周里，您可能像大多数人一样，虽然会遇到一些让人紧张或担心的事情，但这些情绪是暂时的、情境性的，并没有持续地困扰您，也没有对您的生活、工作和社交造成明显的干扰。这就像一个湖面，偶尔有风吹过会有涟漪，但大部分时间是平静的。</p>
+    <p><strong style="color:#007BFF;">建议：</strong><br>
+    这是一个积极的信号，说明您有比较好的内在平衡能力。我们可以借此机会学习如何“维稳”和提升心理免疫力。<br>
+    ▫ 规律生活：保持稳定的作息和充足的睡眠。<br>
+    ▫ 身体活动：每周3-5次，每次30分钟中等强度运动。<br>
+    ▫ 正念练习：每天5-10分钟深呼吸或冥想。<br>
+    ▫ 兴趣滋养：投入能带来快乐的兴趣爱好。<br>
+    ▫ 关注信号：留意焦虑诱因，提前做好准备。
+    </p>
+  `;
+} else if (stdScore >= 50 && stdScore <= 59) {
+  cat = '轻度焦虑';
+  content = `
+    <p><strong style="color:#007BFF;">解释：</strong><br>
+    您的分数显示，您近期确实感受到比平常更多的焦虑和担忧。可能会觉得心里总是有事放不下，容易疲倦，或者身体上有些紧张，比如肩颈发硬、睡眠较浅等。</p>
+    <p><strong style="color:#007BFF;">建议：</strong><br>
+    ▫ 记录“焦虑日记”：写下引发焦虑的事件、想法和反应。<br>
+    ▫ 放松训练：腹式呼吸或渐进式肌肉放松法。<br>
+    ▫ 挑战想法：问自己“我担心的事真的会发生吗？”<br>
+    ▫ 主动倾诉：和家人朋友说出来，情绪会缓解。<br>
+    ▫ 若2-4周后无明显改善，建议寻求心理咨询。
+    </p>
+  `;
+} else if (stdScore >= 60 && stdScore <= 69) {
+  cat = '中度焦虑';
+  content = `
+    <p><strong style="color:#007BFF;">解释：</strong><br>
+    您的分数表明，焦虑情绪已经达到了一个需要高度重视的程度。可能会出现心慌、手抖、睡眠受影响，专注困难等。</p>
+    <p><strong style="color:#007BFF;">建议：</strong><br>
+    ▫ 寻求专业帮助：建议尽快进行心理咨询。<br>
+    ▫ 考虑精神科评估：必要时短期药物辅助。<br>
+    ▫ 降低自我要求，给自己缓冲空间。<br>
+    ▫ 保证休息，避免咖啡因和酒精。<br>
+    ▫ 规律运动与饮食，帮助恢复生理平衡。
+    </p>
+  `;
+} else {
+  cat = '重度焦虑';
+  content = `
+    <p><strong style="color:#007BFF;">解释：</strong><br>
+    您目前正承受着非常高强度的焦虑和痛苦，可能伴随失控感、惊恐、睡眠严重紊乱。请知道这不是您的错，而是焦虑水平过高所致。</p>
+    <p><strong style="color:#007BFF;">建议：</strong><br>
+    ▫ 立即就医：前往精神科或心理卫生中心进行评估。<br>
+    ▫ 告知亲友：让他们陪同并支持您。<br>
+    ▫ 若感到极度无助，请拨打心理危机干预热线。<br>
+    ▫ 心理治疗与药物治疗结合是最有效的方案。<br>
+    ▫ 请记住，您并不孤单，焦虑是可以被治愈的。
+    </p>
+  `;
+}
+
+document.getElementById('resultCategory').innerHTML = `<h3>${cat}</h3>`;
+document.getElementById('resultDesc').innerHTML = content;
 
   document.getElementById('categoryLabel').textContent=`评估结果：${cat}`;
   document.getElementById('categoryDesc').textContent=desc;
